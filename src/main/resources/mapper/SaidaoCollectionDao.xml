@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SaidaoCollectionDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.saidao_id as saidaoId
+        ,a.yonghu_id as yonghuId
+        ,a.saidao_collection_types as saidaoCollectionTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.SaidaoCollectionView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,saidao.saidao_name as saidaoName
+        ,saidao.saidao_uuid_number as saidaoUuidNumber
+        ,saidao.saidao_photo as saidaoPhoto
+        ,saidao.saidao_types as saidaoTypes
+        ,saidao.saidao_old_money as saidaoOldMoney
+        ,saidao.saidao_new_money as saidaoNewMoney
+        ,saidao.saidao_clicknum as saidaoClicknum
+        ,saidao.saidao_content as saidaoContent
+        ,saidao.shangxia_types as shangxiaTypes
+        ,saidao.saidao_delete as saidaoDelete
+        ,yonghu.yonghu_uuid_number as yonghuUuidNumber
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.jinyong_types as jinyongTypes
+
+        FROM saidao_collection  a
+        left JOIN saidao saidao ON a.saidao_id = saidao.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.saidaoId != null and params.saidaoId != ''">
+                and (
+                    a.saidao_id = #{params.saidaoId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test="params.saidaoCollectionTypes != null and params.saidaoCollectionTypes != ''">
+                and a.saidao_collection_types = #{params.saidaoCollectionTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+                <!-- 判断赛道的id不为空 -->
+            <if test=" params.saidaoIdNotNull != '' and params.saidaoIdNotNull != null and params.saidaoIdNotNull != 'null' ">
+                and a.saidao_id IS NOT NULL
+            </if>
+            <if test=" params.saidaoName != '' and params.saidaoName != null and params.saidaoName != 'null' ">
+                and saidao.saidao_name like CONCAT('%',#{params.saidaoName},'%')
+            </if>
+            <if test=" params.saidaoUuidNumber != '' and params.saidaoUuidNumber != null and params.saidaoUuidNumber != 'null' ">
+                and saidao.saidao_uuid_number like CONCAT('%',#{params.saidaoUuidNumber},'%')
+            </if>
+            <if test="params.saidaoTypes != null  and params.saidaoTypes != ''">
+                and saidao.saidao_types = #{params.saidaoTypes}
+            </if>
+
+            <if test="params.saidaoOldMoneyStart != null ">
+                <![CDATA[  and saidao.saidao_old_money >= #{params.saidaoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.saidaoOldMoneyEnd != null ">
+                <![CDATA[  and saidao.saidao_old_money <= #{params.saidaoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.saidaoOldMoney != null and params.saidaoOldMoney != ''">
+                and a.saidao_old_money = #{params.saidaoOldMoney}
+            </if>
+            <if test="params.saidaoNewMoneyStart != null ">
+                <![CDATA[  and saidao.saidao_new_money >= #{params.saidaoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.saidaoNewMoneyEnd != null ">
+                <![CDATA[  and saidao.saidao_new_money <= #{params.saidaoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.saidaoNewMoney != null and params.saidaoNewMoney != ''">
+                and a.saidao_new_money = #{params.saidaoNewMoney}
+            </if>
+            <if test="params.saidaoClicknumStart != null  and params.saidaoClicknumStart != '' ">
+                <![CDATA[  and saidao.saidao_clicknum >= #{params.saidaoClicknumStart}   ]]>
+            </if>
+            <if test="params.saidaoClicknumEnd != null  and params.saidaoClicknumEnd != '' ">
+                <![CDATA[  and saidao.saidao_clicknum <= #{params.saidaoClicknumEnd}   ]]>
+            </if>
+            <if test="params.saidaoClicknum != null  and params.saidaoClicknum != '' ">
+                and saidao.saidao_clicknum = #{params.saidaoClicknum}
+            </if>
+            <if test=" params.saidaoContent != '' and params.saidaoContent != null and params.saidaoContent != 'null' ">
+                and saidao.saidao_content like CONCAT('%',#{params.saidaoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and saidao.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.saidaoDeleteStart != null  and params.saidaoDeleteStart != '' ">
+                <![CDATA[  and saidao.saidao_delete >= #{params.saidaoDeleteStart}   ]]>
+            </if>
+            <if test="params.saidaoDeleteEnd != null  and params.saidaoDeleteEnd != '' ">
+                <![CDATA[  and saidao.saidao_delete <= #{params.saidaoDeleteEnd}   ]]>
+            </if>
+            <if test="params.saidaoDelete != null  and params.saidaoDelete != '' ">
+                and saidao.saidao_delete = #{params.saidaoDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(saidao.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(saidao.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuUuidNumber != '' and params.yonghuUuidNumber != null and params.yonghuUuidNumber != 'null' ">
+                and yonghu.yonghu_uuid_number like CONCAT('%',#{params.yonghuUuidNumber},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.newMoney != null and params.newMoney != ''">
+                and a.new_money = #{params.newMoney}
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and yonghu.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.SaidaoDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.saidao_name as saidaoName
+        ,a.saidao_uuid_number as saidaoUuidNumber
+        ,a.saidao_photo as saidaoPhoto
+        ,a.saidao_types as saidaoTypes
+        ,a.saidao_old_money as saidaoOldMoney
+        ,a.saidao_new_money as saidaoNewMoney
+        ,a.saidao_clicknum as saidaoClicknum
+        ,a.saidao_content as saidaoContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.saidao_delete as saidaoDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.SaidaoView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM saidao  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.saidaoName != '' and params.saidaoName != null and params.saidaoName != 'null' ">
+                and a.saidao_name like CONCAT('%',#{params.saidaoName},'%')
+            </if>
+            <if test=" params.saidaoUuidNumber != '' and params.saidaoUuidNumber != null and params.saidaoUuidNumber != 'null' ">
+                and a.saidao_uuid_number like CONCAT('%',#{params.saidaoUuidNumber},'%')
+            </if>
+            <if test="params.saidaoTypes != null and params.saidaoTypes != ''">
+                and a.saidao_types = #{params.saidaoTypes}
+            </if>
+            <if test="params.saidaoOldMoneyStart != null ">
+                <![CDATA[  and a.saidao_old_money >= #{params.saidaoOldMoneyStart}   ]]>
+            </if>
+            <if test="params.saidaoOldMoneyEnd != null ">
+                <![CDATA[  and a.saidao_old_money <= #{params.saidaoOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.saidaoOldMoney != null and params.saidaoOldMoney != ''">
+                and a.saidao_old_money = #{params.saidaoOldMoney}
+            </if>
+            <if test="params.saidaoNewMoneyStart != null ">
+                <![CDATA[  and a.saidao_new_money >= #{params.saidaoNewMoneyStart}   ]]>
+            </if>
+            <if test="params.saidaoNewMoneyEnd != null ">
+                <![CDATA[  and a.saidao_new_money <= #{params.saidaoNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.saidaoNewMoney != null and params.saidaoNewMoney != ''">
+                and a.saidao_new_money = #{params.saidaoNewMoney}
+            </if>
+            <if test="params.saidaoClicknumStart != null and params.saidaoClicknumStart != ''">
+                <![CDATA[  and a.saidao_clicknum >= #{params.saidaoClicknumStart}   ]]>
+            </if>
+            <if test="params.saidaoClicknumEnd != null and params.saidaoClicknumEnd != ''">
+                <![CDATA[  and a.saidao_clicknum <= #{params.saidaoClicknumEnd}   ]]>
+            </if>
+             <if test="params.saidaoClicknum != null and params.saidaoClicknum != ''">
+                and a.saidao_clicknum = #{params.saidaoClicknum}
+             </if>
+            <if test=" params.saidaoContent != '' and params.saidaoContent != null and params.saidaoContent != 'null' ">
+                and a.saidao_content like CONCAT('%',#{params.saidaoContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.saidaoDeleteStart != null and params.saidaoDeleteStart != ''">
+                <![CDATA[  and a.saidao_delete >= #{params.saidaoDeleteStart}   ]]>
+            </if>
+            <if test="params.saidaoDeleteEnd != null and params.saidaoDeleteEnd != ''">
+                <![CDATA[  and a.saidao_delete <= #{params.saidaoDeleteEnd}   ]]>
+            </if>
+             <if test="params.saidaoDelete != null and params.saidaoDelete != ''">
+                and a.saidao_delete = #{params.saidaoDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

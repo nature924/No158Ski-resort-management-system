@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.QijuDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.qiju_name as qijuName
+        ,a.qiju_uuid_number as qijuUuidNumber
+        ,a.qiju_photo as qijuPhoto
+        ,a.qiju_types as qijuTypes
+        ,a.qiju_kucun_number as qijuKucunNumber
+        ,a.qiju_old_money as qijuOldMoney
+        ,a.qiju_new_money as qijuNewMoney
+        ,a.qiju_clicknum as qijuClicknum
+        ,a.qiju_content as qijuContent
+        ,a.shangxia_types as shangxiaTypes
+        ,a.qiju_delete as qijuDelete
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.QijuView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM qiju  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.qijuName != '' and params.qijuName != null and params.qijuName != 'null' ">
+                and a.qiju_name like CONCAT('%',#{params.qijuName},'%')
+            </if>
+            <if test=" params.qijuUuidNumber != '' and params.qijuUuidNumber != null and params.qijuUuidNumber != 'null' ">
+                and a.qiju_uuid_number like CONCAT('%',#{params.qijuUuidNumber},'%')
+            </if>
+            <if test="params.qijuTypes != null and params.qijuTypes != ''">
+                and a.qiju_types = #{params.qijuTypes}
+            </if>
+            <if test="params.qijuKucunNumberStart != null and params.qijuKucunNumberStart != ''">
+                <![CDATA[  and a.qiju_kucun_number >= #{params.qijuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.qijuKucunNumberEnd != null and params.qijuKucunNumberEnd != ''">
+                <![CDATA[  and a.qiju_kucun_number <= #{params.qijuKucunNumberEnd}   ]]>
+            </if>
+             <if test="params.qijuKucunNumber != null and params.qijuKucunNumber != ''">
+                and a.qiju_kucun_number = #{params.qijuKucunNumber}
+             </if>
+            <if test="params.qijuOldMoneyStart != null ">
+                <![CDATA[  and a.qiju_old_money >= #{params.qijuOldMoneyStart}   ]]>
+            </if>
+            <if test="params.qijuOldMoneyEnd != null ">
+                <![CDATA[  and a.qiju_old_money <= #{params.qijuOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.qijuOldMoney != null and params.qijuOldMoney != ''">
+                and a.qiju_old_money = #{params.qijuOldMoney}
+            </if>
+            <if test="params.qijuNewMoneyStart != null ">
+                <![CDATA[  and a.qiju_new_money >= #{params.qijuNewMoneyStart}   ]]>
+            </if>
+            <if test="params.qijuNewMoneyEnd != null ">
+                <![CDATA[  and a.qiju_new_money <= #{params.qijuNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.qijuNewMoney != null and params.qijuNewMoney != ''">
+                and a.qiju_new_money = #{params.qijuNewMoney}
+            </if>
+            <if test="params.qijuClicknumStart != null and params.qijuClicknumStart != ''">
+                <![CDATA[  and a.qiju_clicknum >= #{params.qijuClicknumStart}   ]]>
+            </if>
+            <if test="params.qijuClicknumEnd != null and params.qijuClicknumEnd != ''">
+                <![CDATA[  and a.qiju_clicknum <= #{params.qijuClicknumEnd}   ]]>
+            </if>
+             <if test="params.qijuClicknum != null and params.qijuClicknum != ''">
+                and a.qiju_clicknum = #{params.qijuClicknum}
+             </if>
+            <if test=" params.qijuContent != '' and params.qijuContent != null and params.qijuContent != 'null' ">
+                and a.qiju_content like CONCAT('%',#{params.qijuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null and params.shangxiaTypes != ''">
+                and a.shangxia_types = #{params.shangxiaTypes}
+            </if>
+            <if test="params.qijuDeleteStart != null and params.qijuDeleteStart != ''">
+                <![CDATA[  and a.qiju_delete >= #{params.qijuDeleteStart}   ]]>
+            </if>
+            <if test="params.qijuDeleteEnd != null and params.qijuDeleteEnd != ''">
+                <![CDATA[  and a.qiju_delete <= #{params.qijuDeleteEnd}   ]]>
+            </if>
+             <if test="params.qijuDelete != null and params.qijuDelete != ''">
+                and a.qiju_delete = #{params.qijuDelete}
+             </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

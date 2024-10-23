@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.QijuCommentbackDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.qiju_id as qijuId
+        ,a.yonghu_id as yonghuId
+        ,a.qiju_commentback_text as qijuCommentbackText
+        ,a.insert_time as insertTime
+        ,a.reply_text as replyText
+        ,a.update_time as updateTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.QijuCommentbackView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,qiju.qiju_name as qijuName
+        ,qiju.qiju_uuid_number as qijuUuidNumber
+        ,qiju.qiju_photo as qijuPhoto
+        ,qiju.qiju_types as qijuTypes
+        ,qiju.qiju_kucun_number as qijuKucunNumber
+        ,qiju.qiju_old_money as qijuOldMoney
+        ,qiju.qiju_new_money as qijuNewMoney
+        ,qiju.qiju_clicknum as qijuClicknum
+        ,qiju.qiju_content as qijuContent
+        ,qiju.shangxia_types as shangxiaTypes
+        ,qiju.qiju_delete as qijuDelete
+        ,yonghu.yonghu_uuid_number as yonghuUuidNumber
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+        ,yonghu.jinyong_types as jinyongTypes
+
+        FROM qiju_commentback  a
+        left JOIN qiju qiju ON a.qiju_id = qiju.id
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.qijuId != null and params.qijuId != ''">
+                and (
+                    a.qiju_id = #{params.qijuId}
+                )
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.qijuCommentbackText != '' and params.qijuCommentbackText != null and params.qijuCommentbackText != 'null' ">
+                and a.qiju_commentback_text like CONCAT('%',#{params.qijuCommentbackText},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+            <if test=" params.replyText != '' and params.replyText != null and params.replyText != 'null' ">
+                and a.reply_text like CONCAT('%',#{params.replyText},'%')
+            </if>
+            <if test=" params.updateTimeStart != '' and params.updateTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) >= UNIX_TIMESTAMP(#{params.updateTimeStart}) ]]>
+            </if>
+            <if test=" params.updateTimeEnd != '' and params.updateTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.update_time) <= UNIX_TIMESTAMP(#{params.updateTimeEnd}) ]]>
+            </if>
+            <if test="params.updateTime != null and params.updateTime != ''">
+                and a.update_time = #{params.updateTime}
+            </if>
+
+                <!-- 判断滑雪器具的id不为空 -->
+            <if test=" params.qijuIdNotNull != '' and params.qijuIdNotNull != null and params.qijuIdNotNull != 'null' ">
+                and a.qiju_id IS NOT NULL
+            </if>
+            <if test=" params.qijuName != '' and params.qijuName != null and params.qijuName != 'null' ">
+                and qiju.qiju_name like CONCAT('%',#{params.qijuName},'%')
+            </if>
+            <if test=" params.qijuUuidNumber != '' and params.qijuUuidNumber != null and params.qijuUuidNumber != 'null' ">
+                and qiju.qiju_uuid_number like CONCAT('%',#{params.qijuUuidNumber},'%')
+            </if>
+            <if test="params.qijuTypes != null  and params.qijuTypes != ''">
+                and qiju.qiju_types = #{params.qijuTypes}
+            </if>
+
+            <if test="params.qijuKucunNumberStart != null  and params.qijuKucunNumberStart != '' ">
+                <![CDATA[  and qiju.qiju_kucun_number >= #{params.qijuKucunNumberStart}   ]]>
+            </if>
+            <if test="params.qijuKucunNumberEnd != null  and params.qijuKucunNumberEnd != '' ">
+                <![CDATA[  and qiju.qiju_kucun_number <= #{params.qijuKucunNumberEnd}   ]]>
+            </if>
+            <if test="params.qijuKucunNumber != null  and params.qijuKucunNumber != '' ">
+                and qiju.qiju_kucun_number = #{params.qijuKucunNumber}
+            </if>
+            <if test="params.qijuOldMoneyStart != null ">
+                <![CDATA[  and qiju.qiju_old_money >= #{params.qijuOldMoneyStart}   ]]>
+            </if>
+            <if test="params.qijuOldMoneyEnd != null ">
+                <![CDATA[  and qiju.qiju_old_money <= #{params.qijuOldMoneyEnd}   ]]>
+            </if>
+            <if test="params.qijuOldMoney != null and params.qijuOldMoney != ''">
+                and a.qiju_old_money = #{params.qijuOldMoney}
+            </if>
+            <if test="params.qijuNewMoneyStart != null ">
+                <![CDATA[  and qiju.qiju_new_money >= #{params.qijuNewMoneyStart}   ]]>
+            </if>
+            <if test="params.qijuNewMoneyEnd != null ">
+                <![CDATA[  and qiju.qiju_new_money <= #{params.qijuNewMoneyEnd}   ]]>
+            </if>
+            <if test="params.qijuNewMoney != null and params.qijuNewMoney != ''">
+                and a.qiju_new_money = #{params.qijuNewMoney}
+            </if>
+            <if test="params.qijuClicknumStart != null  and params.qijuClicknumStart != '' ">
+                <![CDATA[  and qiju.qiju_clicknum >= #{params.qijuClicknumStart}   ]]>
+            </if>
+            <if test="params.qijuClicknumEnd != null  and params.qijuClicknumEnd != '' ">
+                <![CDATA[  and qiju.qiju_clicknum <= #{params.qijuClicknumEnd}   ]]>
+            </if>
+            <if test="params.qijuClicknum != null  and params.qijuClicknum != '' ">
+                and qiju.qiju_clicknum = #{params.qijuClicknum}
+            </if>
+            <if test=" params.qijuContent != '' and params.qijuContent != null and params.qijuContent != 'null' ">
+                and qiju.qiju_content like CONCAT('%',#{params.qijuContent},'%')
+            </if>
+            <if test="params.shangxiaTypes != null  and params.shangxiaTypes != ''">
+                and qiju.shangxia_types = #{params.shangxiaTypes}
+            </if>
+
+            <if test="params.qijuDeleteStart != null  and params.qijuDeleteStart != '' ">
+                <![CDATA[  and qiju.qiju_delete >= #{params.qijuDeleteStart}   ]]>
+            </if>
+            <if test="params.qijuDeleteEnd != null  and params.qijuDeleteEnd != '' ">
+                <![CDATA[  and qiju.qiju_delete <= #{params.qijuDeleteEnd}   ]]>
+            </if>
+            <if test="params.qijuDelete != null  and params.qijuDelete != '' ">
+                and qiju.qiju_delete = #{params.qijuDelete}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiju.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(qiju.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+            <if test="params.insertTime != null and params.insertTime != ''">
+                and a.insert_time = #{params.insertTime}
+            </if>
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuUuidNumber != '' and params.yonghuUuidNumber != null and params.yonghuUuidNumber != 'null' ">
+                and yonghu.yonghu_uuid_number like CONCAT('%',#{params.yonghuUuidNumber},'%')
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+            <if test="params.newMoney != null and params.newMoney != ''">
+                and a.new_money = #{params.newMoney}
+            </if>
+            <if test="params.jinyongTypes != null  and params.jinyongTypes != ''">
+                and yonghu.jinyong_types = #{params.jinyongTypes}
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
